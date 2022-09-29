@@ -632,17 +632,16 @@ var Quiet = (function() {
     function createAudioInput() {
         audioInput = 0; // prevent others from trying to create
         window.setTimeout(function() {
-            gUM.call(navigator, gUMConstraints(),
-                function(e) {
-                    audioInput = audioCtx.createMediaStreamSource(e);
+            navigator.mediaDevices.getUserMedia(gUMConstraints()).then(function(e) {
+                audioInput = audioCtx.createMediaStreamSource(e);
 
-                    // stash a very permanent reference so this isn't collected
-                    window.quiet_receiver_anti_gc = audioInput;
+                // stash a very permanent reference so this isn't collected
+                window.quiet_receiver_anti_gc = audioInput;
 
-                    audioInputReady();
-                }, function(reason) {
-                    audioInputFailed(reason.name);
-                });
+                audioInputReady();
+            }).catch(function(reason) {
+                audioInputFailed(reason.name);
+            })
         }, 0);
     };
 
@@ -739,7 +738,7 @@ var Quiet = (function() {
         // quiet does not create an audio input when it starts
         // getting microphone access requires a permission dialog so only ask for it if we need it
         if (gUM === undefined) {
-            gUM = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+            gUM = navigator.mediaDevices.getUserMedia;
         }
 
         if (gUM === undefined) {

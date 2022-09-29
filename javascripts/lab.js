@@ -745,8 +745,7 @@ var QuietLab = (function() {
                 onReceive: onReceive,
                 onCreate: function() {
                     if (source === undefined) {
-                        var gUM = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
-                        gUM.call(navigator, gUMConstraints(), onGUM, onGUMFail);
+                        navigator.mediaDevices.getUserMedia(gUMConstraints()).then(onGUM).catch(onGUMFail)
                     } else {
                         source.connect(analyser);
                         drawFFT();
